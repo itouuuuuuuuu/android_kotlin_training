@@ -4,6 +4,8 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.util.Patterns
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -88,6 +90,57 @@ class MainActivity : AppCompatActivity() {
             myWebView.destroy()
         }
     }
+
+    // オプションメニューが呼ばれる前に呼ばれるメソッド
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+
+        // メニューアイテムを取得
+        val forwardItem = menu!!.findItem(R.id.action_forward)
+        val backItem    = menu!!.findItem(R.id.action_back)
+
+        // 進める・戻れるときにボタンを押せるように設定
+        forwardItem.isEnabled = myWebView.canGoForward()
+        backItem.isEnabled = myWebView.canGoBack()
+
+        return super.onPrepareOptionsMenu(menu)
+    }
+
+    // オプションメニューの表示
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+//        return super.onCreateOptionsMenu(menu)
+
+        menuInflater.inflate(R.menu.main_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+
+        // 選択されたメニューのidを取得
+        val id = item!!.itemId
+
+        // 選択されたメニューにより処理を実行
+        when(id) {
+            R.id.action_reload -> {
+                myWebView.reload()
+                return true
+            }
+
+            R.id.action_forward -> {
+                myWebView.goForward()
+                return true
+            }
+
+            R.id.action_back -> {
+                myWebView.goBack()
+                return true
+            }
+
+            else -> return super.onOptionsItemSelected(item)
+
+        }
+
+    }
+
 
 }
 
