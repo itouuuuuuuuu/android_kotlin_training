@@ -2,11 +2,15 @@ package com.example.masafumi_ito.myscheduler
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import com.example.masafumi_ito.myscheduler.model.Schedule
 import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_schedule_edit.*
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.*
 
 class ScheduleEditActivity : AppCompatActivity() {
 
@@ -23,25 +27,41 @@ class ScheduleEditActivity : AppCompatActivity() {
     // 保存ボタンがタップされた時の処理
     fun onSaveTapped(view: View) {
 
-        realm.executeTransaction {
+        val sdf = SimpleDateFormat("yyyy/MM/dd")
+        var dateParse = Date()
 
-//            // 保存されているスケジュールのidの最大値を取得
-//            val maxId: Long = realm.where(Schedule::class.java).max("id").toLong()
-//
-//            val schedule = realm.createObject(Schedule::class.java, 0)
-
-//            schedule.title = titleTextView.text.toString()
-
-//            schedule.title = "test"
-//            schedule.date = null
-//            schedule.detail = "test"
-
+        try {
+            dateParse = sdf.parse(dateEditText.text.toString())
+        } catch (e: ParseException) {
+            e.printStackTrace()
         }
 
+        val date = dateParse
+
+        realm.executeTransaction {
+
+//            realm.deleteAll()
+
+            // 保存されているスケジュールのidの最大値を取得
+            val maxId = if(realm.where(Schedule::class.java).max("id") != null)
+                realm.where(Schedule::class.java).max("id")
+            else
+                -1
+
+            // idに１を足して新しいオブジェクトを作成
+            val schedule = realm.createObject(Schedule::class.java, maxId.toLong() + 1)
+
+            // レイアウトファイルから入力された値を取得
+            schedule.title  = titleEditText.text.toString()
+            schedule.date   = date
+            schedule.detail = detailEditText.text.toString()
+        }
+
+        // トーストの表示
         Toast.makeText(this, "追加しました", Toast.LENGTH_SHORT).show()
 
+        // インテントを終了
         finish()
-
     }
 
     override fun onDestroy() {

@@ -25,7 +25,6 @@ import kotlinx.android.synthetic.main.activity_schedule_edit.*
 import kotlinx.android.synthetic.main.content_main.*
 import java.text.SimpleDateFormat
 
-
 class MainActivity : AppCompatActivity() {
 
     // realm操作用のプロパティ（kotlinのプロパティは初期値が必要だが、lateinitで初期値を後から設定できる）
@@ -41,10 +40,21 @@ class MainActivity : AppCompatActivity() {
         realm = Realm.getDefaultInstance()
 
         // 保存したスケジュール情報を全て取得
-        val schedules: OrderedRealmCollection<Schedule>? = realm.where(Schedule::class.java).findAll()
+        val schedules = realm.where(Schedule::class.java).findAll()
 
         // 取得したスケジュール情報をアダプターにセット
         listView.adapter = ScheduleAdapter(schedules)
+
+        // タップした時のイベント
+        listView.setOnItemClickListener { parent, view, position, id ->
+
+            // スケジュールのインスタンスを取得
+            val schedule = parent.getItemAtPosition(position) as Schedule
+
+            val intent = Intent(this, ScheduleEditActivity::class.java)       // インテントの作成
+            intent.putExtra("schedule_id", schedule.id)                       // スケジュールのidを渡す
+            startActivity(intent)                                             // インテントを開く
+        }
     }
 
     override fun onDestroy() {
@@ -56,6 +66,8 @@ class MainActivity : AppCompatActivity() {
 
     // FABがタップされた時の処理
     fun onClickFab(view: View) {
+
+        // スケジュール登録ページへ移動
         val intent = Intent(this, ScheduleEditActivity::class.java)
         startActivity(intent)
     }
@@ -63,13 +75,14 @@ class MainActivity : AppCompatActivity() {
     // アダプター（realmを使用するアダプターはRealmBaseAdapterを継承する）
     class ScheduleAdapter(data: OrderedRealmCollection<Schedule>?) : RealmBaseAdapter<Schedule>(data) {
 
-        private class ViewHolder(var date: TextView?, var title: TextView?)
+        // リストのひとつの項目を保存するクラス
+        private class ViewHolder(var date : TextView? = null, var title: TextView? = null)
 
         // リストの項目が表示される度に実行される処理
         override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
 
-            var view = convertView // リストのひとつの項目のビュー
-            var viewHolder = ViewHolder(null, null)
+            var view = convertView          // リストのひとつの項目のビュー
+            var viewHolder = ViewHolder()   // リストのひとつの項目を保存するクラスの初期化
 
             // リストの項目が読み込まれていない場合（初回表示）
             if (view == null) {

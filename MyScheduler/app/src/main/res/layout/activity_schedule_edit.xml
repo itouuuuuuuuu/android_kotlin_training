@@ -18,6 +18,7 @@
     <EditText
         android:id="@+id/dateEditText"
         app:layout_constraintTop_toBottomOf="@id/dateTextView"
+        android:inputType="date"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
