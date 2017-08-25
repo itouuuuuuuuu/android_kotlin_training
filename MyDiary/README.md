@@ -1,0 +1,4 @@
+* CardView
+* Fragment
+* RecyclerView
+* Realm
