@@ -15,16 +15,16 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-/**
- * Created by hiroaki on 2017/04/18.
- */
-
 public class MyUtils {
 
+    // byte配列をBitmapクラスのインスタンスに変換
     public static Bitmap getImageFromByte(byte[] bytes) {
         BitmapFactory.Options opt = new BitmapFactory.Options();
+
+        // Bitmapをメモリ上に展開せずに画像の情報のみ取得する用に設定
         opt.inJustDecodeBounds = true;
         BitmapFactory.decodeByteArray(bytes, 0, bytes.length, opt);
+
         int bitmapSize = 1;
         if ((opt.outHeight * opt.outWidth) > 500000) {
             double outSize = (double) (opt.outHeight * opt.outWidth) / 500000;
@@ -36,22 +36,38 @@ public class MyUtils {
         return bmp;
     }
 
+    // Bitmapをbyte配列に変換（realmに保存できるように）
     public static byte[] getByteFromImage(Bitmap bmp) {
+
+        // ファイル出力用のストリーム
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
+
+        // Bitmapクラスのインスタンスを形式と画質を指定して圧縮
         bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
+
+        // ストリームをbyte配列に変換
         byte[] byteArray = stream.toByteArray();
+
         return byteArray;
     }
 
     public static Bitmap getImageFromStream(ContentResolver resolver, Uri uri)
             throws IOException {
-        InputStream
-                in;
+
+        InputStream in;
         BitmapFactory.Options opt = new BitmapFactory.Options();
+
+        // Bitmapをメモリ上に展開せずに画像の情報のみ取得する用に設定
         opt.inJustDecodeBounds = true;
+
+        // URIからストリームとして画像を取得
         in = resolver.openInputStream(uri);
+
+        // ストリームをBitmapに変換
         BitmapFactory.decodeStream(in, null, opt);
+
         in.close();
+
         int bitmapSize = 1;
         if ((opt.outHeight * opt.outWidth) > 500000) {
             double outSize = (double) (opt.outHeight * opt.outWidth) / 500000;
@@ -65,12 +81,19 @@ public class MyUtils {
         return bmp;
     }
 
-    public static void tintMenuIcon(Context context, MenuItem item,
-                                    @ColorRes int color) {
+    // オプションメニュー項目の色を設定
+    public static void tintMenuIcon(Context context, MenuItem item, @ColorRes int color) {
+
+        // アイコンを取得
         Drawable normalDrawable = item.getIcon();
+
+        // アイコンに色付けできるようにラップする
         Drawable wrapDrawable = DrawableCompat.wrap(normalDrawable);
-        DrawableCompat.setTint(wrapDrawable,
-                ContextCompat.getColor(context, color));
+
+        // Drawableに色付け
+        DrawableCompat.setTint(wrapDrawable, ContextCompat.getColor(context, color));
+
+        // 色付けしたアイコンを設定
         item.setIcon(wrapDrawable);
     }
 }
