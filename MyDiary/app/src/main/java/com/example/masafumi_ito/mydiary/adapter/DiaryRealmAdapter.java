@@ -1,6 +1,8 @@
 package com.example.masafumi_ito.mydiary.adapter;
 
+
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,6 +15,7 @@ import android.widget.TextView;
 
 import com.example.masafumi_ito.mydiary.MyUtils;
 import com.example.masafumi_ito.mydiary.R;
+import com.example.masafumi_ito.mydiary.ShowDiaryActivity;
 import com.example.masafumi_ito.mydiary.model.Diary;
 
 import io.realm.OrderedRealmCollection;
@@ -59,6 +62,27 @@ public class DiaryRealmAdapter extends RealmRecyclerViewAdapter<Diary, DiaryReal
                 .inflate(R.layout.card_layout, parent, false);
 
         final DiaryViewHolder holder = new DiaryViewHolder(itemView);
+
+        // リストをタップした時の動作
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                // タップされたリストの位置を取得
+                int position = holder.getAdapterPosition();
+
+                // Realmオブジェクトからオブジェクトを取得
+                Diary diary = getData().get(position);
+
+                // 日記のIDの取得
+                long diaryId = diary.id;
+
+                // 明示的インテントでShowDiaryActivityを開く
+                Intent intent = new Intent(context, ShowDiaryActivity.class);
+                intent.putExtra(ShowDiaryActivity.DIARY_ID, diaryId);
+                context.startActivity(intent);
+            }
+        });
 
         return holder;
     }
