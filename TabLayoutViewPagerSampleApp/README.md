@@ -1,4 +1,4 @@
-* PageView
+* ViewPager
 * TabLayout
 * fragment
 
