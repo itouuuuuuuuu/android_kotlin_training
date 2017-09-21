@@ -8,6 +8,8 @@ import android.widget.ListView;
 
 import com.example.masafumi_ito.retrofitsampleapp.data.Bookmark;
 import com.example.masafumi_ito.retrofitsampleapp.data.BookmarkEntry;
+import com.example.masafumi_ito.retrofitsampleapp.data.Token;
+import com.example.masafumi_ito.retrofitsampleapp.data.User;
 
 import java.io.IOException;
 import java.util.List;
@@ -44,8 +46,8 @@ public class MainActivity extends AppCompatActivity {
 //                Request original = chain.request();
 //
 //                Request request = original.newBuilder()
-//                        .header("hoge", "hoge")
-//                        .header("foo", "foo")
+//                        .header("Authorization", " NBRAarWBWRQHc8M0s-Nvaw 6YCI38bBRc8eR2dBXNIxCg")
+////                        .header("foo", "foo")
 //                        .method(original.method(), original.body())
 //                        .build();
 //
@@ -55,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Retrofitの設定
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(HatenaApiInterface.END_POINT)              // エンドポイント
+                .baseUrl("http://13.112.147.249")              // エンドポイント
                 .addConverterFactory(GsonConverterFactory.create()) // json変換方法（gsonを使用に設定）
                 .build();
 
@@ -63,42 +65,25 @@ public class MainActivity extends AppCompatActivity {
         mApiInterface = retrofit.create(HatenaApiInterface.class);
 
         // HatenaAPI呼び出し
-        Call<BookmarkEntry> call = mApiInterface.getBookmarkEntry(HatenaApiInterface.TARGET_URL);
+//        Call<BookmarkEntry> call = mApiInterface.getBookmarkEntry(HatenaApiInterface.TARGET_URL);
+        Call<User> call = mApiInterface.getReq();
 
         // 非同期で実行
-        call.enqueue(new Callback<BookmarkEntry>() {
+        call.enqueue(new Callback<User>() {
             @Override
-            public void onResponse(Call<BookmarkEntry> call, Response<BookmarkEntry> response) {
+            public void onResponse(Call<User> call, Response<User> response) {
 
                 // ログの出力
                 Log.d(TAG, "onResponse: " + response.isSuccessful());
 
                 // レスポンスをentryに格納
-                BookmarkEntry entry = response.body();
+                User entry = response.body();
 
-                // Bookmarkの一覧をゲット
-                List<Bookmark> bookmarks = entry.getBookmarks();
 
-                // アダプターの作成
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_list_item_1);
-
-                for (Bookmark b : bookmarks) {
-                    StringBuilder builder = new StringBuilder();
-                    builder.append(b.getUser() + "(" + b.getTimestamp() + ")");
-                    String comment = b.getComment();
-                    if (comment.length() > 0) {
-                        builder.append("\n" + comment);
-                    }
-
-                    adapter.add(builder.toString());
-                }
-
-                // アダプターのセット
-                mListView.setAdapter(adapter);
             }
 
             @Override
-            public void onFailure(Call<BookmarkEntry> call, Throwable t) {
+            public void onFailure(Call<User> call, Throwable t) {
                 Log.d(TAG, "onFailure: " + t.getCause() + ", " + t.getMessage());
                 t.printStackTrace();
             }
